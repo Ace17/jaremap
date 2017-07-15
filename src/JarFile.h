@@ -8,6 +8,7 @@
 
 ClassFile parseClass(InputStream* fp);
 
+void dumpClass(ClassFile const& class_);
 void writeClass(OutputStream* fp, ClassFile const& class_);
 
 using namespace std;
@@ -65,7 +66,7 @@ public:
       if(stream.pos != contents.size())
         throw runtime_error("[jar] parse error");
 
-      cout << "[jar] class has " << m_classes[className].methods_.size() << " methods" << endl;
+      dumpClass(m_classes[className]);
     }
   }
 
