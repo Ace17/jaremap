@@ -62,43 +62,85 @@ void renameFiles(map<string, ClassFile>& files)
   }
 }
 
+struct Config
+{
+  string inputPath, outputPath;
+  string remapPath;
+};
+
+Config parseCommandLine(int argc, char** argv)
+{
+  Config config;
+  int k = 1;
+  auto moreArgs = [&] () -> bool { return k < argc; };
+  auto popArg =
+    [&] () -> string {
+      if(!moreArgs())
+        throw runtime_error("unepxected end of command line");
+
+      return argv[k++];
+    };
+
+  while(moreArgs())
+  {
+    auto word = popArg();
+
+    if(word == "-r")
+      config.remapPath = popArg();
+    else if(word == "-i")
+      config.inputPath = popArg();
+    else if(word == "-o")
+      config.outputPath = popArg();
+    else
+      throw runtime_error("Unknown switch: '" + word + "'");
+  }
+
+  return config;
+}
+
 int main(int argc, char** argv)
 {
   classRemap["we"] = "WeekEnd";
 
   try
   {
-    for(int i = 1; i < argc; ++i)
+    auto config = parseCommandLine(argc, argv);
+
+    if(config.inputPath.empty())
+      throw runtime_error("no input path specified");
+
+    if(endsWith(config.inputPath, ".jar"))
     {
-      if(endsWith(argv[i], ".jar"))
+      JarFile jar(config.inputPath);
+
+      auto& classes = jar.getAllClasses();
+
+      for(auto& class_ : classes)
+        renameClasses(class_.second);
+
+      renameFiles(classes);
+
+      if(!config.outputPath.empty())
+        jar.save(config.outputPath);
+    }
+    else
+    {
+      FileStream fp;
+      fp.open(config.inputPath);
+
+      auto class_ = parseClass(&fp);
+
+      if(!fp.eof())
+        throw runtime_error("parse error");
+
+      dumpClass(class_);
+
+      renameClasses(class_);
+
+      if(!config.outputPath.empty())
       {
-        JarFile jar(argv[i]);
-
-        auto& classes = jar.getAllClasses();
-
-        for(auto& class_ : classes)
-          renameClasses(class_.second);
-
-        renameFiles(classes);
-
-        jar.save("serialized.jar");
-      }
-      else
-      {
-        FileStream fp;
-        fp.open(argv[i]);
-
-        auto class_ = parseClass(&fp);
-
-        if(!fp.eof())
-          throw runtime_error("parse error");
-
-        dumpClass(class_);
-
-        renameClasses(class_);
-
         OutputFileStream out;
-        out.open("serialized.class");
+        out.open(config.outputPath);
         writeClass(&out, class_);
       }
     }
