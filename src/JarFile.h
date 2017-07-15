@@ -35,10 +35,14 @@ public:
 
     for(auto fileName : archive.getFilenames())
     {
-      if(!endsWith(fileName, ".class"))
-        continue;
-
       auto contents = archive.getFile(fileName);
+
+      if(!endsWith(fileName, ".class"))
+      {
+        m_opaqueFiles[fileName] = move(contents);
+        continue;
+      }
+
       auto const className = fileName.substr(0, fileName.size() - 6);
 
       struct BufferStream : InputStream
@@ -69,7 +73,7 @@ public:
   {
     Archive archive(path, true);
 
-    for(auto class_ : m_classes)
+    for(auto& class_ : m_classes)
     {
       auto const className = class_.first;
 
@@ -89,6 +93,11 @@ public:
       writeClass(&stream, class_.second);
       archive.setFile(className + ".class", stream.data);
     }
+
+    for(auto& opaqueFile : m_opaqueFiles)
+    {
+      archive.setFile(opaqueFile.first, opaqueFile.second);
+    }
   }
 
   std::map<string, ClassFile> getAllClasses()
@@ -98,5 +107,6 @@ public:
 
 private:
   std::map<string, ClassFile> m_classes;
+  std::map<string, string> m_opaqueFiles;
 };
 
