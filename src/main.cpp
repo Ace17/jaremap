@@ -5,12 +5,13 @@
 #include "FileStream.h"
 #include "ClassFile.h"
 #include "InputStream.h"
+#include "OutputStream.h"
 #include "JarFile.h"
 
 using namespace std;
 
-// module entry point
 ClassFile parseClass(InputStream* fp);
+void writeClass(OutputStream* fp, ClassFile const& class_);
 
 int main(int argc, char** argv)
 {
@@ -21,6 +22,8 @@ int main(int argc, char** argv)
       if(endsWith(argv[i], ".jar"))
       {
         JarFile jar(argv[i]);
+
+        jar.save("serialized.jar");
       }
       else
       {
@@ -33,6 +36,11 @@ int main(int argc, char** argv)
           throw runtime_error("parse error");
 
         cout << "Class has " << class_.methods_.size() << " methods" << endl;
+
+
+        OutputFileStream out;
+        out.open("serialized.class");
+        writeClass(&out, class_);
       }
     }
 

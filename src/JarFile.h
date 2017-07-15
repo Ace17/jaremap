@@ -8,10 +8,7 @@
 
 ClassFile parseClass(InputStream* fp);
 
-void writeClassFile(ClassFile const& class_, ostream& o)
-{
-  o << "Hello" << endl;
-}
+void writeClass(OutputStream* fp, ClassFile const& class_);
 
 using namespace std;
 
@@ -75,9 +72,22 @@ public:
     for(auto class_ : m_classes)
     {
       auto const className = class_.first;
-      ostringstream ss;
-      writeClassFile(class_.second, ss);
-      archive.setFile(className + ".class", ss.str());
+
+      struct BufferStream : OutputStream
+      {
+        virtual void write(const uint8_t* dst, size_t len)
+        {
+          for(size_t i = 0; i < len; ++i)
+            data += dst[i];
+        }
+
+        string data;
+      };
+
+      BufferStream stream;
+
+      writeClass(&stream, class_.second);
+      archive.setFile(className + ".class", stream.data);
     }
   }
 
