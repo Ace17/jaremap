@@ -2,6 +2,7 @@
 #include "Archive.h"
 #include "zip.h"
 #include <stdexcept>
+#include <string.h> // memcpy
 
 #define m_zip ((zip*)m_handle)
 
@@ -43,7 +44,15 @@ string Archive::getFile(string path)
 void Archive::setFile(string path, const string& data)
 {
   printf("Adding: '%s'\n", path.c_str());
-  auto source = zip_source_buffer(m_zip, data.data(), data.size(), 0);
+
+  auto ptr = static_cast<char*>(std::malloc(data.size()));
+
+  if (!ptr)
+    throw std::runtime_error("malloc failed");
+
+  memcpy(ptr, data.data(), data.size());
+
+  auto source = zip_source_buffer(m_zip, ptr, data.size(), 1);
 
   if(!source)
     throw runtime_error(string("Can't create zip source: ") + zip_strerror(m_zip));
