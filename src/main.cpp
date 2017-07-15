@@ -12,6 +12,7 @@ using namespace std;
 
 ClassFile parseClass(InputStream* fp);
 void writeClass(OutputStream* fp, ClassFile const& class_);
+void dumpClass(ClassFile const& class_);
 
 int main(int argc, char** argv)
 {
@@ -35,8 +36,7 @@ int main(int argc, char** argv)
         if(!fp.eof())
           throw runtime_error("parse error");
 
-        cout << "Class has " << class_.methods_.size() << " methods" << endl;
-
+        dumpClass(class_);
 
         OutputFileStream out;
         out.open("serialized.class");
