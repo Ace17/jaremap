@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
 
 #include <string>
 #include "FileStream.h"
@@ -62,6 +63,30 @@ void renameFiles(map<string, ClassFile>& files)
   }
 }
 
+void loadRemappings(string path)
+{
+  ifstream fp(path);
+
+  if(!fp.is_open())
+    throw runtime_error("can't open '" + path + "' for reading");
+
+  string line;
+
+  while(!fp.eof())
+  {
+    string type, from, to;
+    fp >> type >> ws >> from >> to;
+
+    if(type == "class")
+      classRemap[from] = to;
+  }
+
+  for(auto& remapping : classRemap)
+  {
+    cout << remapping.first << " -> " << remapping.second << endl;
+  }
+}
+
 struct Config
 {
   string inputPath, outputPath;
@@ -100,8 +125,6 @@ Config parseCommandLine(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
-  classRemap["we"] = "WeekEnd";
-
   try
   {
     auto config = parseCommandLine(argc, argv);
@@ -113,12 +136,16 @@ int main(int argc, char** argv)
     {
       JarFile jar(config.inputPath);
 
-      auto& classes = jar.getAllClasses();
+      if(!config.remapPath.empty())
+      {
+        loadRemappings(config.remapPath);
+        auto& classes = jar.getAllClasses();
 
-      for(auto& class_ : classes)
-        renameClasses(class_.second);
+        for(auto& class_ : classes)
+          renameClasses(class_.second);
 
-      renameFiles(classes);
+        renameFiles(classes);
+      }
 
       if(!config.outputPath.empty())
         jar.save(config.outputPath);
@@ -135,7 +162,11 @@ int main(int argc, char** argv)
 
       dumpClass(class_);
 
-      renameClasses(class_);
+      if(!config.remapPath.empty())
+      {
+        loadRemappings(config.remapPath);
+        renameClasses(class_);
+      }
 
       if(!config.outputPath.empty())
       {
