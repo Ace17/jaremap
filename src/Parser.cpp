@@ -83,8 +83,10 @@ struct Parser
       fp->read(info.info_, 2);
       fp->read(&info.info_[2], 2);
       break;
-    case CONSTANT::String:
     case CONSTANT::Class:
+      info.name_index_ = readWord(fp);
+      break;
+    case CONSTANT::String:
     case CONSTANT::MethodType:
       fp->read(info.info_, 2);
       break;

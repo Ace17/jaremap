@@ -9,10 +9,15 @@ string getString(ClassFile const& class_, int index)
   return string(constant.bytes_.begin(), constant.bytes_.end());
 }
 
+string getClass(ClassFile const& class_, int index)
+{
+  auto& constant = class_.const_pool_[index];
+  assert(constant.tag_ == (int)CONSTANT::Class);
+  return getString(class_, constant.name_index_);
+}
+
 void dumpClass(ClassFile const& class_)
 {
-  cout << "Class" << endl;
-
   if(0)
   {
     int i = 0;
@@ -32,11 +37,10 @@ void dumpClass(ClassFile const& class_)
     }
   }
 
+  cout << "Class: " << getClass(class_, class_.this_class_) << endl;
+
   for(auto& method : class_.methods_)
-  {
-    (void)method;
     cout << " * method: " << getString(class_, method.name_index_) << endl;
-  }
 
   cout << endl;
 }

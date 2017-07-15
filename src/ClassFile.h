@@ -29,6 +29,11 @@ struct ConstPoolInfo
   uint8_t tag_ = 0;
   uint8_t info_[8] {};
   vector<uint8_t> bytes_; // for utf8
+
+  union
+  {
+    uint16_t name_index_;
+  };
 };
 
 struct AttrInfo

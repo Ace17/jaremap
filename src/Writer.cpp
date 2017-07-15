@@ -74,8 +74,10 @@ struct Writer
       fp->write(info.info_, 2);
       fp->write(&info.info_[2], 2);
       break;
-    case CONSTANT::String:
     case CONSTANT::Class:
+      writeWord(fp, info.name_index_);
+      break;
+    case CONSTANT::String:
     case CONSTANT::MethodType:
       fp->write(info.info_, 2);
       break;
