@@ -9,7 +9,7 @@ void writeUnsigned(OutputStream* fp, int n, uint32_t val)
   uint8_t buf[16];
 
   for(int i = n; i >= 0; --i)
-    buf[i] = (val >> (8 * (n-i-1))) & 0xff;
+    buf[i] = (val >> (8 * (n - i - 1))) & 0xff;
 
   fp->write(buf, n);
 }
