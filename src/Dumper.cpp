@@ -39,9 +39,12 @@ void dumpClass(ClassFile const& class_)
 
   cout << "Class: " << getClass(class_, class_.this_class_) << endl;
 
-  for(auto& method : class_.methods_)
-    cout << " * method: " << getString(class_, method.name_index_) << endl;
+  if(0)
+  {
+    for(auto& method : class_.methods_)
+      cout << " * method: " << getString(class_, method.name_index_) << endl;
 
-  cout << endl;
+    cout << endl;
+  }
 }
 

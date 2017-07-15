@@ -47,7 +47,7 @@ void Archive::setFile(string path, const string& data)
 
   auto ptr = static_cast<char*>(std::malloc(data.size()));
 
-  if (!ptr)
+  if(!ptr)
     throw std::runtime_error("malloc failed");
 
   memcpy(ptr, data.data(), data.size());

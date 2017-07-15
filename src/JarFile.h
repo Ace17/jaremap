@@ -101,7 +101,7 @@ public:
     }
   }
 
-  std::map<string, ClassFile> getAllClasses()
+  std::map<string, ClassFile>& getAllClasses()
   {
     return m_classes;
   }
