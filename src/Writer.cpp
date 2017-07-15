@@ -92,11 +92,9 @@ struct Writer
       break;
     case CONSTANT::Utf8:
       {
-        fp->write(info.info_, 2);
-
-        auto const len = info.info_[0] * 256 + info.info_[1];
-
-        fp->write(info.bytes_.data(), len);
+        auto const len = info.utf8_.size();
+        writeWord(fp, len);
+        fp->write((uint8_t*)info.utf8_.data(), len);
       }
       break;
     case CONSTANT::MethodHandle:

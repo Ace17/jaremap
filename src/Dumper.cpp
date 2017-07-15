@@ -6,7 +6,7 @@ string getString(ClassFile const& class_, int index)
 {
   auto& constant = class_.const_pool_[index];
   assert(constant.tag_ == (int)CONSTANT::Utf8);
-  return string(constant.bytes_.begin(), constant.bytes_.end());
+  return constant.utf8_;
 }
 
 string getClass(ClassFile const& class_, int index)
@@ -29,7 +29,7 @@ void dumpClass(ClassFile const& class_)
       cout << "[" << i << "] ";
 
       if(constant.tag_ == (int)CONSTANT::Utf8)
-        cout << constant.bytes_.data();
+        cout << constant.utf8_;
 
       cout << endl;
 

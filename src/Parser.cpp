@@ -101,12 +101,9 @@ struct Parser
       break;
     case CONSTANT::Utf8:
       {
-        fp->read(info.info_, 2);
-
-        auto const len = info.info_[0] * 256 + info.info_[1];
-        info.bytes_.resize(len);
-
-        fp->read(info.bytes_.data(), len);
+        auto const len = readWord(fp);
+        info.utf8_.resize(len);
+        fp->read((uint8_t*)info.utf8_.data(), len);
       }
       break;
     case CONSTANT::MethodHandle:
