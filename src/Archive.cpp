@@ -1,6 +1,7 @@
 #define ZIP_DISABLE_DEPRECATED
 #include "Archive.h"
 #include "zip.h"
+#include <stdexcept>
 
 #define m_zip ((zip*)m_handle)
 
