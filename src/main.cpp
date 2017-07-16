@@ -60,7 +60,7 @@ void remapFieldDescriptor(ConstPoolInfo& desc)
   }
 }
 
-void remapClassReferences(ClassFile& class_)
+void doRenamings(ClassFile& class_)
 {
   for(auto& constant : class_.const_pool)
   {
@@ -202,7 +202,8 @@ int main(int argc, char** argv)
     auto processOneClass =
       [&] (ClassFile& class_)
       {
-        remapClassReferences(class_);
+        if(!config.remapPath.empty())
+          doRenamings(class_);
 
         if(config.verbose)
           dumpClass(class_);
@@ -212,15 +213,13 @@ int main(int argc, char** argv)
     {
       JarFile jar(config.inputPath);
 
+      auto& classes = jar.getAllClasses();
+
+      for(auto& class_ : classes)
+        processOneClass(class_.second);
+
       if(!config.remapPath.empty())
-      {
-        auto& classes = jar.getAllClasses();
-
-        for(auto& class_ : classes)
-          processOneClass(class_.second);
-
         renameFiles(classes);
-      }
 
       if(!config.outputPath.empty())
         jar.save(config.outputPath);
@@ -235,8 +234,7 @@ int main(int argc, char** argv)
       if(!fp.eof())
         throw runtime_error("parse error");
 
-      if(!config.remapPath.empty())
-        processOneClass(class_);
+      processOneClass(class_);
 
       if(!config.outputPath.empty())
       {

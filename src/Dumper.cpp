@@ -40,52 +40,49 @@ const char* TagToString(CONSTANT tag)
 
 void dumpClass(ClassFile const& class_)
 {
-  if(1)
+  int i = 0;
+  cout << "Constants:" << endl;
+
+  for(auto& constant : class_.const_pool)
   {
-    int i = 0;
-    cout << "Constants:" << endl;
-
-    for(auto& constant : class_.const_pool)
+    cout << " * " << i;
+    cout << " [" << TagToString(constant.tag) << "] ";
+    switch(constant.tag)
     {
-      cout << " * " << i;
-      cout << " [" << TagToString(constant.tag) << "] ";
-      switch(constant.tag)
-      {
-      case CONSTANT::Utf8:
-        cout << constant.utf8;
-        break;
-      case CONSTANT::Class:
-        cout << "name_index=" << constant.name_index << " ";
-        break;
-      case CONSTANT::NameAndType:
-        cout << "name_index=" << constant.name_index << " ";
-        cout << "descriptor_index=" << constant.descriptor_index << " ";
-        break;
-      case CONSTANT::Fieldref:
-      case CONSTANT::Methodref:
-      case CONSTANT::InterfaceMethodref:
-        cout << "class=" << constant.class_index << " ";
-        cout << "name_and_type=" << constant.name_and_type_index << " ";
-        break;
-      default:
-        cout << "...";
-        break;
-      }
-
-      cout << endl;
-
-      ++i;
+    case CONSTANT::Utf8:
+      cout << constant.utf8;
+      break;
+    case CONSTANT::Class:
+      cout << "name_index=" << constant.name_index << " ";
+      break;
+    case CONSTANT::NameAndType:
+      cout << "name_index=" << constant.name_index << " ";
+      cout << "descriptor_index=" << constant.descriptor_index << " ";
+      break;
+    case CONSTANT::Fieldref:
+    case CONSTANT::Methodref:
+    case CONSTANT::InterfaceMethodref:
+      cout << "class=" << constant.class_index << " ";
+      cout << "name_and_type=" << constant.name_and_type_index << " ";
+      break;
+    default:
+      cout << "...";
+      break;
     }
+
+    cout << endl;
+
+    ++i;
   }
 
   cout << "Class: " << getClass(class_, class_.this_class) << endl;
 
-  if(1)
-  {
-    for(auto& method : class_.methods)
-      cout << " * method: " << getString(class_, method.name_index) << endl;
+  for(auto& method : class_.methods)
+    cout << " * method: " << getString(class_, method.name_index) << " (" << method.name_index << ")" << endl;
 
-    cout << endl;
-  }
+  for(auto& field : class_.fields)
+    cout << " * field: " << getString(class_, field.name_index) << " (" << field.name_index << ")" << endl;
+
+  cout << endl;
 }
 
