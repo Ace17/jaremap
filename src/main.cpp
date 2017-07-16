@@ -22,7 +22,9 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
 {
   if(from.empty())
     return;
+
   size_t i = 0;
+
   while((i = str.find(from, i)) != std::string::npos)
   {
     str.replace(i, from.length(), to);
@@ -34,7 +36,6 @@ void remapDescriptorQuickAndDirty(ConstPoolInfo& desc)
 {
   assert(desc.tag == CONSTANT::Utf8);
 
-  fprintf(stderr, "remapQND '%s'\n", desc.utf8.c_str());
   for(auto& remapping : classRemap)
   {
     auto const from = "L" + remapping.first + ";";
@@ -136,17 +137,13 @@ void loadRemappings(string path)
     if(type == "class")
       classRemap[from] = to;
   }
-
-  for(auto& remapping : classRemap)
-  {
-    cout << remapping.first << " -> " << remapping.second << endl;
-  }
 }
 
 struct Config
 {
   string inputPath, outputPath;
   string remapPath;
+  bool verbose = false;
 };
 
 Config parseCommandLine(int argc, char** argv)
@@ -172,17 +169,13 @@ Config parseCommandLine(int argc, char** argv)
       config.inputPath = popArg();
     else if(word == "-o")
       config.outputPath = popArg();
+    else if(word == "-v")
+      config.verbose = true;
     else
       throw runtime_error("Unknown switch: '" + word + "'");
   }
 
   return config;
-}
-
-void processOneClass(ClassFile& class_)
-{
-  remapClassReferences(class_);
-  dumpClass(class_);
 }
 
 int main(int argc, char** argv)
@@ -195,7 +188,24 @@ int main(int argc, char** argv)
       throw runtime_error("no input path specified");
 
     if(!config.remapPath.empty())
+    {
       loadRemappings(config.remapPath);
+
+      if(config.verbose)
+      {
+        for(auto& remapping : classRemap)
+          cout << remapping.first << " -> " << remapping.second << endl;
+      }
+    }
+
+    auto processOneClass =
+      [&] (ClassFile& class_)
+      {
+        remapClassReferences(class_);
+
+        if(config.verbose)
+          dumpClass(class_);
+      };
 
     if(endsWith(config.inputPath, ".jar"))
     {
