@@ -69,10 +69,13 @@ struct Writer
     case CONSTANT::Fieldref:
     case CONSTANT::Methodref:
     case CONSTANT::InterfaceMethodref:
-    case CONSTANT::NameAndType:
     case CONSTANT::InvokeDynamic:
       fp->write(info.info_, 2);
       fp->write(&info.info_[2], 2);
+      break;
+    case CONSTANT::NameAndType:
+      writeWord(fp, info.name_index_);
+      writeWord(fp, info.descriptor_index_);
       break;
     case CONSTANT::Class:
       writeWord(fp, info.name_index_);

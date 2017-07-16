@@ -32,7 +32,11 @@ struct ConstPoolInfo
 
   union
   {
-    uint16_t name_index_;
+    struct
+    {
+      uint16_t name_index_;
+      uint16_t descriptor_index_;
+    };
   };
 };
 
