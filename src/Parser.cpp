@@ -64,7 +64,7 @@ struct Parser
 
       parseConstPoolContents(m_class.const_pool[i], fp, tag);
 
-      // those are take two entries
+      // those take two entries
       if((CONSTANT)tag == CONSTANT::Long || (CONSTANT)tag == CONSTANT::Double)
         ++i;
     }
@@ -73,7 +73,7 @@ struct Parser
   void parseConstPoolContents(ConstPoolInfo& info, InputStream* fp, uint8_t tag)
   {
     info.tag = (CONSTANT)tag;
-    switch((CONSTANT)tag)
+    switch(info.tag)
     {
     case CONSTANT::Fieldref:
     case CONSTANT::Methodref:
