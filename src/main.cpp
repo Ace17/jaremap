@@ -18,22 +18,47 @@ void dumpClass(ClassFile const& class_);
 
 map<string, string> classRemap;
 
+void remapFieldDescriptor(ConstPoolInfo& desc)
+{
+  assert(desc.tag_ == (int)CONSTANT::Utf8);
+
+  if(desc.utf8_[0] == 'L')
+  {
+    assert(desc.utf8_.back() == ';');
+
+    auto const origClassName = desc.utf8_.substr(1, desc.utf8_.size() - 2);
+    auto i_newName = classRemap.find(origClassName);
+
+    if(i_newName != classRemap.end())
+      desc.utf8_ = "L" + i_newName->second + ";";
+  }
+}
+
 void renameClasses(ClassFile& class_)
 {
   for(auto& constant : class_.const_pool_)
   {
-    if(constant.tag_ != (int)CONSTANT::Class)
-      continue;
+    if(constant.tag_ == (int)CONSTANT::Class)
+    {
+      auto& classNameEntry = class_.const_pool_[constant.name_index_];
 
-    auto& classNameEntry = class_.const_pool_[constant.name_index_];
+      auto const& origClassName = classNameEntry.utf8_;
+      auto i_newName = classRemap.find(origClassName);
 
-    auto const& origClassName = classNameEntry.utf8_;
-    auto i_newName = classRemap.find(origClassName);
+      if(i_newName != classRemap.end())
+        classNameEntry.utf8_ = i_newName->second;
+    }
+    else if(constant.tag_ == (int)CONSTANT::NameAndType)
+    {
+      auto& typeNameEntry = class_.const_pool_[constant.descriptor_index_];
+      remapFieldDescriptor(typeNameEntry);
+    }
+  }
 
-    if(i_newName == classRemap.end())
-      continue;
-
-    classNameEntry.utf8_ = i_newName->second;
+  for(auto& field : class_.fields_)
+  {
+    auto& desc = class_.const_pool_[field.descriptor_index_];
+    remapFieldDescriptor(desc);
   }
 }
 
