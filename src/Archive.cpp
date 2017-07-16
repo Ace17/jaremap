@@ -43,8 +43,6 @@ string Archive::getFile(string path)
 
 void Archive::setFile(string path, const string& data)
 {
-  printf("Adding: '%s'\n", path.c_str());
-
   auto ptr = static_cast<char*>(std::malloc(data.size()));
 
   if(!ptr)
