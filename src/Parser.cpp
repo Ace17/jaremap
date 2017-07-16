@@ -48,21 +48,21 @@ struct Parser
     if(magic != 0xCAFEBABE)
       throw runtime_error("invalid magic");
 
-    m_class.minor_version_ = readWord(fp);
-    m_class.major_version_ = readWord(fp);
+    m_class.minor_version = readWord(fp);
+    m_class.major_version = readWord(fp);
   }
 
   void parseConstPool(InputStream* fp)
   {
-    m_class.const_pool_count_ = readWord(fp);
+    m_class.const_pool_count = readWord(fp);
 
-    m_class.const_pool_.resize(m_class.const_pool_count_);
+    m_class.const_pool.resize(m_class.const_pool_count);
 
-    for(size_t i = 1; i < m_class.const_pool_count_; ++i)   // no use index 0
+    for(size_t i = 1; i < m_class.const_pool_count; ++i)   // no use index 0
     {
       uint8_t tag = readUnsigned(fp, 1);
 
-      parseConstPoolContents(m_class.const_pool_[i], fp, tag);
+      parseConstPoolContents(m_class.const_pool[i], fp, tag);
 
       // those are take two entries
       if((CONSTANT)tag == CONSTANT::Long || (CONSTANT)tag == CONSTANT::Double)
@@ -72,46 +72,46 @@ struct Parser
 
   void parseConstPoolContents(ConstPoolInfo& info, InputStream* fp, uint8_t tag)
   {
-    info.tag_ = (CONSTANT)tag;
+    info.tag = (CONSTANT)tag;
     switch((CONSTANT)tag)
     {
     case CONSTANT::Fieldref:
     case CONSTANT::Methodref:
     case CONSTANT::InterfaceMethodref:
     case CONSTANT::InvokeDynamic:
-      fp->read(info.info_, 2);
-      fp->read(&info.info_[2], 2);
+      fp->read(info.info, 2);
+      fp->read(&info.info[2], 2);
       break;
     case CONSTANT::NameAndType:
-      info.name_index_ = readWord(fp);
-      info.descriptor_index_ = readWord(fp);
+      info.name_index = readWord(fp);
+      info.descriptor_index = readWord(fp);
       break;
     case CONSTANT::Class:
-      info.name_index_ = readWord(fp);
+      info.name_index = readWord(fp);
       break;
     case CONSTANT::String:
     case CONSTANT::MethodType:
-      fp->read(info.info_, 2);
+      fp->read(info.info, 2);
       break;
     case CONSTANT::Integer:
     case CONSTANT::Float:
-      fp->read(info.info_, 4);
+      fp->read(info.info, 4);
       break;
     case CONSTANT::Long:
     case CONSTANT::Double:
-      fp->read(info.info_, 4);
-      fp->read(&info.info_[4], 4);
+      fp->read(info.info, 4);
+      fp->read(&info.info[4], 4);
       break;
     case CONSTANT::Utf8:
       {
         auto const len = readWord(fp);
-        info.utf8_.resize(len);
-        fp->read((uint8_t*)info.utf8_.data(), len);
+        info.utf8.resize(len);
+        fp->read((uint8_t*)info.utf8.data(), len);
       }
       break;
     case CONSTANT::MethodHandle:
-      fp->read(info.info_, 1);
-      fp->read(&info.info_[1], 2);
+      fp->read(info.info, 1);
+      fp->read(&info.info[1], 2);
       break;
     default:
       throw runtime_error("unsupported constant pool tag");
@@ -120,57 +120,57 @@ struct Parser
 
   void parseFlagAndClass(InputStream* fp)
   {
-    m_class.access_flags_ = readWord(fp);
-    m_class.this_class_ = readWord(fp);
-    m_class.super_class_ = readWord(fp);
+    m_class.access_flags = readWord(fp);
+    m_class.this_class = readWord(fp);
+    m_class.super_class = readWord(fp);
   }
 
   void parseInterface(InputStream* fp)
   {
     auto const interfaceCount = readWord(fp);
-    m_class.interfaces_.resize(interfaceCount);
+    m_class.interfaces.resize(interfaceCount);
 
-    for(auto& itf : m_class.interfaces_)
+    for(auto& itf : m_class.interfaces)
       itf = readWord(fp);
   }
 
   void parseField(InputStream* fp)
   {
     auto const fieldCount = readWord(fp);
-    m_class.fields_.resize(fieldCount);
+    m_class.fields.resize(fieldCount);
 
-    for(auto& field : m_class.fields_)
+    for(auto& field : m_class.fields)
     {
-      field.access_flags_ = readWord(fp);
-      field.name_index_ = readWord(fp);
-      field.descriptor_index_ = readWord(fp);
-      field.attrs_count_ = readWord(fp);
+      field.access_flags = readWord(fp);
+      field.name_index = readWord(fp);
+      field.descriptor_index = readWord(fp);
+      field.attrs_count = readWord(fp);
 
-      parseAttrInner(field.attrs_, field.attrs_count_, fp);
+      parseAttrInner(field.attrs, field.attrs_count, fp);
     }
   }
 
   void parseMethod(InputStream* fp)
   {
     auto const methodCount = readWord(fp);
-    m_class.methods_.resize(methodCount);
+    m_class.methods.resize(methodCount);
 
-    for(auto& method : m_class.methods_)
+    for(auto& method : m_class.methods)
     {
-      method.access_flags_ = readWord(fp);
-      method.name_index_ = readWord(fp);
-      method.descriptor_index_ = readWord(fp);
-      method.attrs_count_ = readWord(fp);
+      method.access_flags = readWord(fp);
+      method.name_index = readWord(fp);
+      method.descriptor_index = readWord(fp);
+      method.attrs_count = readWord(fp);
 
-      parseAttrInner(method.attrs_, method.attrs_count_, fp);
+      parseAttrInner(method.attrs, method.attrs_count, fp);
     }
   }
 
   void parseAttr(InputStream* fp)
   {
-    m_class.attrs_count_ = readWord(fp);
+    m_class.attrs_count = readWord(fp);
 
-    parseAttrInner(m_class.attrs_, m_class.attrs_count_, fp);
+    parseAttrInner(m_class.attrs, m_class.attrs_count, fp);
   }
 
   void parseAttrInner(vector<AttrInfo>& info, size_t num, InputStream* fp)
@@ -179,10 +179,10 @@ struct Parser
 
     for(auto& inf : info)
     {
-      inf.attr_name_index_ = readWord(fp);
-      inf.attr_len_ = readUnsigned(fp, 4);
+      inf.attr_name_index = readWord(fp);
+      inf.attr_len = readUnsigned(fp, 4);
 
-      parseAttrInnerInner(inf.info_, inf.attr_len_, fp);
+      parseAttrInnerInner(inf.info, inf.attr_len, fp);
     }
   }
 

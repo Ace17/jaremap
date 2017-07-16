@@ -26,34 +26,34 @@ enum class CONSTANT
 
 struct ConstPoolInfo
 {
-  CONSTANT tag_ {};
-  uint8_t info_[8] {};
-  string utf8_;
+  CONSTANT tag {};
+  uint8_t info[8] {};
+  string utf8;
 
   union
   {
     struct
     {
-      uint16_t name_index_;
-      uint16_t descriptor_index_;
+      uint16_t name_index;
+      uint16_t descriptor_index;
     };
   };
 };
 
 struct AttrInfo
 {
-  uint16_t attr_name_index_ = 0;
-  uint32_t attr_len_ = 0;
-  vector<uint8_t> info_;
+  uint16_t attr_name_index = 0;
+  uint32_t attr_len = 0;
+  vector<uint8_t> info;
 };
 
 struct FieldInfo
 {
-  uint16_t access_flags_ = 0;
-  uint16_t name_index_ = 0;
-  uint16_t descriptor_index_ = 0;
-  uint16_t attrs_count_ = 0;
-  vector<AttrInfo> attrs_;
+  uint16_t access_flags = 0;
+  uint16_t name_index = 0;
+  uint16_t descriptor_index = 0;
+  uint16_t attrs_count = 0;
+  vector<AttrInfo> attrs;
 };
 
 struct MethodInfo : FieldInfo
@@ -62,17 +62,17 @@ struct MethodInfo : FieldInfo
 
 struct ClassFile
 {
-  uint16_t minor_version_ = 0;
-  uint16_t major_version_ = 0;
-  uint16_t const_pool_count_ = 0;
-  vector<ConstPoolInfo> const_pool_; // 1 ~ const_pool_count-1
-  uint16_t access_flags_ = 0;
-  uint16_t this_class_ = 0;
-  uint16_t super_class_ = 0;
-  vector<uint16_t> interfaces_;
-  vector<FieldInfo> fields_;
-  vector<MethodInfo> methods_;
-  uint16_t attrs_count_ = 0;
-  vector<AttrInfo> attrs_;
+  uint16_t minor_version = 0;
+  uint16_t major_version = 0;
+  uint16_t const_pool_count = 0;
+  vector<ConstPoolInfo> const_pool; // 1 ~ const_pool_count-1
+  uint16_t access_flags = 0;
+  uint16_t this_class = 0;
+  uint16_t super_class = 0;
+  vector<uint16_t> interfaces;
+  vector<FieldInfo> fields;
+  vector<MethodInfo> methods;
+  uint16_t attrs_count = 0;
+  vector<AttrInfo> attrs;
 };
 

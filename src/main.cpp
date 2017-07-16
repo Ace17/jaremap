@@ -20,44 +20,44 @@ map<string, string> classRemap;
 
 void remapFieldDescriptor(ConstPoolInfo& desc)
 {
-  assert(desc.tag_ == CONSTANT::Utf8);
+  assert(desc.tag == CONSTANT::Utf8);
 
-  if(desc.utf8_[0] == 'L')
+  if(desc.utf8[0] == 'L')
   {
-    assert(desc.utf8_.back() == ';');
+    assert(desc.utf8.back() == ';');
 
-    auto const origClassName = desc.utf8_.substr(1, desc.utf8_.size() - 2);
+    auto const origClassName = desc.utf8.substr(1, desc.utf8.size() - 2);
     auto i_newName = classRemap.find(origClassName);
 
     if(i_newName != classRemap.end())
-      desc.utf8_ = "L" + i_newName->second + ";";
+      desc.utf8 = "L" + i_newName->second + ";";
   }
 }
 
 void remapClassReferences(ClassFile& class_)
 {
-  for(auto& constant : class_.const_pool_)
+  for(auto& constant : class_.const_pool)
   {
-    if(constant.tag_ == CONSTANT::Class)
+    if(constant.tag == CONSTANT::Class)
     {
-      auto& classNameEntry = class_.const_pool_[constant.name_index_];
+      auto& classNameEntry = class_.const_pool[constant.name_index];
 
-      auto const& origClassName = classNameEntry.utf8_;
+      auto const& origClassName = classNameEntry.utf8;
       auto i_newName = classRemap.find(origClassName);
 
       if(i_newName != classRemap.end())
-        classNameEntry.utf8_ = i_newName->second;
+        classNameEntry.utf8 = i_newName->second;
     }
-    else if(constant.tag_ == CONSTANT::NameAndType)
+    else if(constant.tag == CONSTANT::NameAndType)
     {
-      auto& typeNameEntry = class_.const_pool_[constant.descriptor_index_];
+      auto& typeNameEntry = class_.const_pool[constant.descriptor_index];
       remapFieldDescriptor(typeNameEntry);
     }
   }
 
-  for(auto& field : class_.fields_)
+  for(auto& field : class_.fields)
   {
-    auto& desc = class_.const_pool_[field.descriptor_index_];
+    auto& desc = class_.const_pool[field.descriptor_index];
     remapFieldDescriptor(desc);
   }
 }

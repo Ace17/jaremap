@@ -4,16 +4,16 @@
 
 string getString(ClassFile const& class_, int index)
 {
-  auto& constant = class_.const_pool_[index];
-  assert(constant.tag_ == CONSTANT::Utf8);
-  return constant.utf8_;
+  auto& constant = class_.const_pool[index];
+  assert(constant.tag == CONSTANT::Utf8);
+  return constant.utf8;
 }
 
 string getClass(ClassFile const& class_, int index)
 {
-  auto& constant = class_.const_pool_[index];
-  assert(constant.tag_ == CONSTANT::Class);
-  return getString(class_, constant.name_index_);
+  auto& constant = class_.const_pool[index];
+  assert(constant.tag == CONSTANT::Class);
+  return getString(class_, constant.name_index);
 }
 
 const char* TagToString(CONSTANT tag)
@@ -45,13 +45,13 @@ void dumpClass(ClassFile const& class_)
     int i = 0;
     cout << "Constants:" << endl;
 
-    for(auto& constant : class_.const_pool_)
+    for(auto& constant : class_.const_pool)
     {
       cout << "#" << i;
-      cout << " [" << TagToString(constant.tag_) << "] ";
+      cout << " [" << TagToString(constant.tag) << "] ";
 
-      if(constant.tag_ == CONSTANT::Utf8)
-        cout << constant.utf8_;
+      if(constant.tag == CONSTANT::Utf8)
+        cout << constant.utf8;
 
       cout << endl;
 
@@ -59,12 +59,12 @@ void dumpClass(ClassFile const& class_)
     }
   }
 
-  cout << "Class: " << getClass(class_, class_.this_class_) << endl;
+  cout << "Class: " << getClass(class_, class_.this_class) << endl;
 
   if(1)
   {
-    for(auto& method : class_.methods_)
-      cout << " * method: " << getString(class_, method.name_index_) << endl;
+    for(auto& method : class_.methods)
+      cout << " * method: " << getString(class_, method.name_index) << endl;
 
     cout << endl;
   }
