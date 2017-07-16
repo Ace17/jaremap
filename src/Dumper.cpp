@@ -5,14 +5,14 @@
 string getString(ClassFile const& class_, int index)
 {
   auto& constant = class_.const_pool_[index];
-  assert(constant.tag_ == (int)CONSTANT::Utf8);
+  assert(constant.tag_ == CONSTANT::Utf8);
   return constant.utf8_;
 }
 
 string getClass(ClassFile const& class_, int index)
 {
   auto& constant = class_.const_pool_[index];
-  assert(constant.tag_ == (int)CONSTANT::Class);
+  assert(constant.tag_ == CONSTANT::Class);
   return getString(class_, constant.name_index_);
 }
 
@@ -47,11 +47,10 @@ void dumpClass(ClassFile const& class_)
 
     for(auto& constant : class_.const_pool_)
     {
-      (void)constant;
       cout << "#" << i;
-      cout << " [" << TagToString((CONSTANT)constant.tag_) << "] ";
+      cout << " [" << TagToString(constant.tag_) << "] ";
 
-      if(constant.tag_ == (int)CONSTANT::Utf8)
+      if(constant.tag_ == CONSTANT::Utf8)
         cout << constant.utf8_;
 
       cout << endl;

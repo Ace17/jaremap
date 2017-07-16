@@ -20,7 +20,7 @@ map<string, string> classRemap;
 
 void remapFieldDescriptor(ConstPoolInfo& desc)
 {
-  assert(desc.tag_ == (int)CONSTANT::Utf8);
+  assert(desc.tag_ == CONSTANT::Utf8);
 
   if(desc.utf8_[0] == 'L')
   {
@@ -38,7 +38,7 @@ void remapClassReferences(ClassFile& class_)
 {
   for(auto& constant : class_.const_pool_)
   {
-    if(constant.tag_ == (int)CONSTANT::Class)
+    if(constant.tag_ == CONSTANT::Class)
     {
       auto& classNameEntry = class_.const_pool_[constant.name_index_];
 
@@ -48,7 +48,7 @@ void remapClassReferences(ClassFile& class_)
       if(i_newName != classRemap.end())
         classNameEntry.utf8_ = i_newName->second;
     }
-    else if(constant.tag_ == (int)CONSTANT::NameAndType)
+    else if(constant.tag_ == CONSTANT::NameAndType)
     {
       auto& typeNameEntry = class_.const_pool_[constant.descriptor_index_];
       remapFieldDescriptor(typeNameEntry);

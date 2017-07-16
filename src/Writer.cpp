@@ -51,20 +51,20 @@ struct Writer
 
     for(size_t i = 1; i < m_class.const_pool_count_; ++i)   // no use index 0
     {
-      writeUnsigned(fp, 1, m_class.const_pool_[i].tag_);
+      writeUnsigned(fp, 1, (int)m_class.const_pool_[i].tag_);
 
       writeConstPoolContents(m_class.const_pool_[i], fp);
 
       // those are take two entries
-      if((CONSTANT)m_class.const_pool_[i].tag_ == CONSTANT::Long
-         || (CONSTANT)m_class.const_pool_[i].tag_ == CONSTANT::Double)
+      if(m_class.const_pool_[i].tag_ == CONSTANT::Long
+         || m_class.const_pool_[i].tag_ == CONSTANT::Double)
         ++i;
     }
   }
 
   void writeConstPoolContents(const ConstPoolInfo& info, OutputStream* fp)
   {
-    switch((CONSTANT)info.tag_)
+    switch(info.tag_)
     {
     case CONSTANT::Fieldref:
     case CONSTANT::Methodref:

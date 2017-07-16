@@ -72,7 +72,7 @@ struct Parser
 
   void parseConstPoolContents(ConstPoolInfo& info, InputStream* fp, uint8_t tag)
   {
-    info.tag_ = tag;
+    info.tag_ = (CONSTANT)tag;
     switch((CONSTANT)tag)
     {
     case CONSTANT::Fieldref:

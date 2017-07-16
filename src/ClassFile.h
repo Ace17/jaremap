@@ -26,7 +26,7 @@ enum class CONSTANT
 
 struct ConstPoolInfo
 {
-  uint8_t tag_ = 0;
+  CONSTANT tag_ {};
   uint8_t info_[8] {};
   string utf8_;
 
