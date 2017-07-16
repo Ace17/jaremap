@@ -34,7 +34,7 @@ void remapFieldDescriptor(ConstPoolInfo& desc)
   }
 }
 
-void renameClasses(ClassFile& class_)
+void remapClassReferences(ClassFile& class_)
 {
   for(auto& constant : class_.const_pool_)
   {
@@ -148,6 +148,12 @@ Config parseCommandLine(int argc, char** argv)
   return config;
 }
 
+void processOneClass(ClassFile& class_)
+{
+  remapClassReferences(class_);
+  dumpClass(class_);
+}
+
 int main(int argc, char** argv)
 {
   try
@@ -157,17 +163,19 @@ int main(int argc, char** argv)
     if(config.inputPath.empty())
       throw runtime_error("no input path specified");
 
+    if(!config.remapPath.empty())
+      loadRemappings(config.remapPath);
+
     if(endsWith(config.inputPath, ".jar"))
     {
       JarFile jar(config.inputPath);
 
       if(!config.remapPath.empty())
       {
-        loadRemappings(config.remapPath);
         auto& classes = jar.getAllClasses();
 
         for(auto& class_ : classes)
-          renameClasses(class_.second);
+          processOneClass(class_.second);
 
         renameFiles(classes);
       }
@@ -186,12 +194,7 @@ int main(int argc, char** argv)
         throw runtime_error("parse error");
 
       if(!config.remapPath.empty())
-      {
-        loadRemappings(config.remapPath);
-        renameClasses(class_);
-      }
-
-      dumpClass(class_);
+        processOneClass(class_);
 
       if(!config.outputPath.empty())
       {
