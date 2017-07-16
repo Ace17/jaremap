@@ -78,6 +78,9 @@ struct Parser
     case CONSTANT::Fieldref:
     case CONSTANT::Methodref:
     case CONSTANT::InterfaceMethodref:
+      info.class_index = readWord(fp);
+      info.name_and_type_index = readWord(fp);
+      break;
     case CONSTANT::InvokeDynamic:
       fp->read(info.info, 2);
       fp->read(&info.info[2], 2);

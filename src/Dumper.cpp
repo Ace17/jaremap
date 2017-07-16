@@ -47,11 +47,23 @@ void dumpClass(ClassFile const& class_)
 
     for(auto& constant : class_.const_pool)
     {
-      cout << "#" << i;
+      cout << " * " << i;
       cout << " [" << TagToString(constant.tag) << "] ";
-
-      if(constant.tag == CONSTANT::Utf8)
+      switch(constant.tag)
+      {
+      case CONSTANT::Utf8:
         cout << constant.utf8;
+        break;
+      case CONSTANT::Fieldref:
+      case CONSTANT::Methodref:
+      case CONSTANT::InterfaceMethodref:
+        cout << "class=" << constant.class_index << " ";
+        cout << "name_and_type=" << constant.name_and_type_index << " ";
+        break;
+      default:
+        cout << "...";
+        break;
+      }
 
       cout << endl;
 

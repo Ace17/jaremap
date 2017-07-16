@@ -37,6 +37,13 @@ struct ConstPoolInfo
       uint16_t name_index;
       uint16_t descriptor_index;
     };
+
+    // Methodref, Fieldref, InterfaceMethodref
+    struct
+    {
+      uint16_t class_index;
+      uint16_t name_and_type_index;
+    };
   };
 };
 
