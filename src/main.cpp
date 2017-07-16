@@ -160,13 +160,13 @@ int main(int argc, char** argv)
       if(!fp.eof())
         throw runtime_error("parse error");
 
-      dumpClass(class_);
-
       if(!config.remapPath.empty())
       {
         loadRemappings(config.remapPath);
         renameClasses(class_);
       }
+
+      dumpClass(class_);
 
       if(!config.outputPath.empty())
       {
