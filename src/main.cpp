@@ -18,6 +18,31 @@ void dumpClass(ClassFile const& class_);
 
 map<string, string> classRemap;
 
+void replaceAll(std::string& str, const std::string& from, const std::string& to)
+{
+  if(from.empty())
+    return;
+  size_t i = 0;
+  while((i = str.find(from, i)) != std::string::npos)
+  {
+    str.replace(i, from.length(), to);
+    i += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+  }
+}
+
+void remapDescriptorQuickAndDirty(ConstPoolInfo& desc)
+{
+  assert(desc.tag == CONSTANT::Utf8);
+
+  fprintf(stderr, "remapQND '%s'\n", desc.utf8.c_str());
+  for(auto& remapping : classRemap)
+  {
+    auto const from = "L" + remapping.first + ";";
+    auto const to = "L" + remapping.second + ";";
+    replaceAll(desc.utf8, from, to);
+  }
+}
+
 void remapFieldDescriptor(ConstPoolInfo& desc)
 {
   assert(desc.tag == CONSTANT::Utf8);
@@ -51,7 +76,7 @@ void remapClassReferences(ClassFile& class_)
     else if(constant.tag == CONSTANT::NameAndType)
     {
       auto& typeNameEntry = class_.const_pool[constant.descriptor_index];
-      remapFieldDescriptor(typeNameEntry);
+      remapDescriptorQuickAndDirty(typeNameEntry);
     }
   }
 
@@ -59,6 +84,12 @@ void remapClassReferences(ClassFile& class_)
   {
     auto& desc = class_.const_pool[field.descriptor_index];
     remapFieldDescriptor(desc);
+  }
+
+  for(auto& method : class_.methods)
+  {
+    auto& desc = class_.const_pool[method.descriptor_index];
+    remapDescriptorQuickAndDirty(desc);
   }
 }
 
