@@ -32,6 +32,7 @@ struct ConstPoolInfo
 
   union
   {
+    // NameAndType
     struct
     {
       uint16_t name_index;

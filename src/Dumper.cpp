@@ -54,6 +54,13 @@ void dumpClass(ClassFile const& class_)
       case CONSTANT::Utf8:
         cout << constant.utf8;
         break;
+      case CONSTANT::Class:
+        cout << "name_index=" << constant.name_index << " ";
+        break;
+      case CONSTANT::NameAndType:
+        cout << "name_index=" << constant.name_index << " ";
+        cout << "descriptor_index=" << constant.descriptor_index << " ";
+        break;
       case CONSTANT::Fieldref:
       case CONSTANT::Methodref:
       case CONSTANT::InterfaceMethodref:
