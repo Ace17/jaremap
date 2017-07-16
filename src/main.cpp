@@ -129,10 +129,11 @@ void loadRemappings(string path)
 
   string line;
 
-  while(!fp.eof())
+  while(getline(fp, line))
   {
+    istringstream iss(line);
     string type, from, to;
-    fp >> type >> ws >> from >> to;
+    iss >> type >> ws >> from >> to;
 
     if(type == "class")
       classRemap[from] = to;
