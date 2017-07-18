@@ -176,25 +176,20 @@ struct Parser
     parseAttrInner(m_class.attrs, m_class.attrs_count, fp);
   }
 
-  void parseAttrInner(vector<AttrInfo>& info, size_t num, InputStream* fp)
+  void parseAttrInner(vector<AttrInfo>& attributes, size_t num, InputStream* fp)
   {
-    info.resize(num);
+    attributes.resize(num);
 
-    for(auto& inf : info)
+    for(auto& attr : attributes)
     {
-      inf.attr_name_index = readWord(fp);
-      inf.attr_len = readUnsigned(fp, 4);
+      attr.attr_name_index = readWord(fp);
+      attr.attr_len = readUnsigned(fp, 4);
 
-      parseAttrInnerInner(inf.info, inf.attr_len, fp);
+      attr.info.resize(attr.attr_len);
+
+      for(auto& inf : attr.info)
+        fp->read(&inf, 1);
     }
-  }
-
-  void parseAttrInnerInner(vector<uint8_t>& info, size_t num, InputStream* fp)
-  {
-    info.resize(num);
-
-    for(auto& inf : info)
-      fp->read(&inf, 1);
   }
 };
 }

@@ -163,21 +163,16 @@ struct Writer
     writeAttrInner(m_class.attrs, m_class.attrs_count, fp);
   }
 
-  void writeAttrInner(const vector<AttrInfo>& info, size_t num, OutputStream* fp)
+  void writeAttrInner(const vector<AttrInfo>& attributes, size_t num, OutputStream* fp)
   {
-    for(auto& inf : info)
+    for(auto& attr : attributes)
     {
-      writeWord(fp, inf.attr_name_index);
-      writeUnsigned(fp, 4, inf.attr_len);
+      writeWord(fp, attr.attr_name_index);
+      writeUnsigned(fp, 4, attr.attr_len);
 
-      writeAttrInnerInner(inf.info, inf.attr_len, fp);
+      for(auto& inf : attr.info)
+        fp->write(&inf, 1);
     }
-  }
-
-  void writeAttrInnerInner(const vector<uint8_t>& info, size_t num, OutputStream* fp)
-  {
-    for(auto& inf : info)
-      fp->write(&inf, 1);
   }
 };
 }
