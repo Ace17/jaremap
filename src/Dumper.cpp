@@ -78,10 +78,19 @@ void dumpClass(ClassFile const& class_)
   cout << "Class: " << getClass(class_, class_.this_class) << endl;
 
   for(auto& method : class_.methods)
-    cout << " * method: " << getString(class_, method.name_index) << " (" << method.name_index << ")" << endl;
+  {
+    cout << " * method: " << getString(class_, method.name_index) << " (" << method.name_index << ")";
+    cout << " <" << getString(class_, method.descriptor_index) << "> (" << method.descriptor_index << ")";
+    cout << endl;
+  }
 
   for(auto& field : class_.fields)
-    cout << " * field: " << getString(class_, field.name_index) << " (" << field.name_index << ")" << endl;
+  {
+    cout << " * field: ";
+    cout << getString(class_, field.name_index) << " (" << field.name_index << ") ";
+    cout << " <" << getString(class_, field.descriptor_index) << "> (" << field.descriptor_index << ")";
+    cout << endl;
+  }
 
   cout << endl;
 }
