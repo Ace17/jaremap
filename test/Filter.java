@@ -16,5 +16,7 @@ class Filter
   void FilterParams()
   {
   }
+
+  int m_integerField;
 }
 

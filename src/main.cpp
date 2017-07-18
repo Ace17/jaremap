@@ -15,6 +15,7 @@ using namespace std;
 ClassFile parseClass(InputStream* fp);
 void writeClass(OutputStream* fp, ClassFile const& class_);
 void dumpClass(ClassFile const& class_);
+void printClass(ClassFile const& class_);
 
 // Renamer.cpp
 extern map<string, string> classRemap;
@@ -71,6 +72,7 @@ struct Config
   string inputPath, outputPath;
   string remapPath;
   bool verbose = false;
+  bool print = false;
 };
 
 Config parseCommandLine(int argc, char** argv)
@@ -98,6 +100,8 @@ Config parseCommandLine(int argc, char** argv)
       config.outputPath = popArg();
     else if(word == "-v")
       config.verbose = true;
+    else if(word == "-p")
+      config.print = true;
     else
       throw runtime_error("Unknown switch: '" + word + "'");
   }
@@ -133,6 +137,9 @@ int main(int argc, char** argv)
 
         if(config.verbose)
           dumpClass(class_);
+
+        if(config.print)
+          printClass(class_);
       };
 
     if(endsWith(config.inputPath, ".jar"))
