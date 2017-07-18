@@ -136,7 +136,7 @@ struct Writer
       writeWord(fp, field.access_flags);
       writeWord(fp, field.name_index);
       writeWord(fp, field.descriptor_index);
-      writeWord(fp, field.attrs_count);
+      writeWord(fp, (int)field.attrs.size());
 
       writeAttrInner(field.attrs, fp);
     }
@@ -151,7 +151,7 @@ struct Writer
       writeWord(fp, method.access_flags);
       writeWord(fp, method.name_index);
       writeWord(fp, method.descriptor_index);
-      writeWord(fp, method.attrs_count);
+      writeWord(fp, (int)method.attrs.size());
 
       writeAttrInner(method.attrs, fp);
     }
@@ -159,7 +159,7 @@ struct Writer
 
   void writeAttr(OutputStream* fp)
   {
-    writeWord(fp, m_class.attrs_count);
+    writeWord(fp, (int)m_class.attrs.size());
     writeAttrInner(m_class.attrs, fp);
   }
 

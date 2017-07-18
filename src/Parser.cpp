@@ -147,9 +147,8 @@ struct Parser
       field.access_flags = readWord(fp);
       field.name_index = readWord(fp);
       field.descriptor_index = readWord(fp);
-      field.attrs_count = readWord(fp);
 
-      parseAttrInner(field.attrs, field.attrs_count, fp);
+      parseAttrInner(field.attrs, fp);
     }
   }
 
@@ -163,22 +162,19 @@ struct Parser
       method.access_flags = readWord(fp);
       method.name_index = readWord(fp);
       method.descriptor_index = readWord(fp);
-      method.attrs_count = readWord(fp);
 
-      parseAttrInner(method.attrs, method.attrs_count, fp);
+      parseAttrInner(method.attrs, fp);
     }
   }
 
   void parseAttr(InputStream* fp)
   {
-    m_class.attrs_count = readWord(fp);
-
-    parseAttrInner(m_class.attrs, m_class.attrs_count, fp);
+    parseAttrInner(m_class.attrs, fp);
   }
 
-  void parseAttrInner(vector<AttrInfo>& attributes, size_t num, InputStream* fp)
+  void parseAttrInner(vector<AttrInfo>& attributes, InputStream* fp)
   {
-    attributes.resize(num);
+    attributes.resize(readWord(fp));
 
     for(auto& attr : attributes)
     {

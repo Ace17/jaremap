@@ -60,7 +60,6 @@ struct FieldInfo
   uint16_t access_flags = 0;
   uint16_t name_index = 0;
   uint16_t descriptor_index = 0;
-  uint16_t attrs_count = 0;
   vector<AttrInfo> attrs;
 };
 
@@ -80,7 +79,6 @@ struct ClassFile
   vector<uint16_t> interfaces;
   vector<FieldInfo> fields;
   vector<MethodInfo> methods;
-  uint16_t attrs_count = 0;
   vector<AttrInfo> attrs;
 };
 
