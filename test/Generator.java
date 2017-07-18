@@ -1,0 +1,7 @@
+class Generator
+{
+  void doGenerate()
+  {
+  }
+}
+
