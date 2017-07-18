@@ -138,7 +138,7 @@ struct Writer
       writeWord(fp, field.descriptor_index);
       writeWord(fp, field.attrs_count);
 
-      writeAttrInner(field.attrs, field.attrs_count, fp);
+      writeAttrInner(field.attrs, fp);
     }
   }
 
@@ -153,17 +153,17 @@ struct Writer
       writeWord(fp, method.descriptor_index);
       writeWord(fp, method.attrs_count);
 
-      writeAttrInner(method.attrs, method.attrs_count, fp);
+      writeAttrInner(method.attrs, fp);
     }
   }
 
   void writeAttr(OutputStream* fp)
   {
     writeWord(fp, m_class.attrs_count);
-    writeAttrInner(m_class.attrs, m_class.attrs_count, fp);
+    writeAttrInner(m_class.attrs, fp);
   }
 
-  void writeAttrInner(const vector<AttrInfo>& attributes, size_t num, OutputStream* fp)
+  void writeAttrInner(const vector<AttrInfo>& attributes, OutputStream* fp)
   {
     for(auto& attr : attributes)
     {
