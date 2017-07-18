@@ -8,7 +8,12 @@ class Filter
     gen.doGenerate();
   }
 
-  void setFilterParams(FilterParams params)
+  int setFilterParams(FilterParams params)
+  {
+    return params.a;
+  }
+
+  void FilterParams()
   {
   }
 }
