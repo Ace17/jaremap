@@ -13,6 +13,7 @@ function main
   run_test simple_class_rename
   run_test colliding_class_rename
   #run_test simple_method_rename
+  run_test simple_field_rename
   echo OK
 }
 
@@ -34,6 +35,13 @@ function simple_method_rename
   echo "method HelloFunctions doSomething doBetter" > $tmpDir/remap.txt
   $bin/jaremap -i $scriptDir/HelloFunctions.class -r $tmpDir/remap.txt -p > $tmpDir/remapped.out
   diff -Naurw $scriptDir/simple_method_rename.expected $tmpDir/remapped.out
+}
+
+function simple_field_rename
+{
+  echo "field HelloFields m_foo m_bar" > $tmpDir/remap.txt
+  $bin/jaremap -i $scriptDir/HelloFields.class -r $tmpDir/remap.txt -p > $tmpDir/remapped.out
+  diff -Naurw $scriptDir/simple_field_rename.expected $tmpDir/remapped.out
 }
 
 function colliding_class_rename

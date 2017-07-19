@@ -1,0 +1,7 @@
+Class: HelloFields
+Uses:
+ * java/lang/Object.<init> [()V]
+ * HelloFields.m_bar [I]
+Defines:
+ * HelloFields.<init> [()V]
+ * HelloFields.m_bar [I]

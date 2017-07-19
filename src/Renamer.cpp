@@ -9,6 +9,13 @@
 using namespace std;
 
 map<string, string> classRemap;
+map<string, string> fieldRemap;
+
+static
+string getString(ClassFile const& class_, int index)
+{
+  return class_.const_pool[index].utf8;
+}
 
 void replaceAll(std::string& str, const std::string& from, const std::string& to)
 {
@@ -88,6 +95,38 @@ void doRenamings(ClassFile& class_)
   {
     auto& desc = class_.const_pool[field.descriptor_index];
     remapFieldDescriptor(desc);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // fields renaming
+  /////////////////////////////////////////////////////////////////////////////
+
+  // refs to field
+  for(auto& constant : class_.const_pool)
+  {
+    if(constant.tag == CONSTANT::Fieldref)
+    {
+      auto const& className = getString(class_, class_.const_pool[constant.class_index].name_index);
+      auto& nameAndType = class_.const_pool[constant.name_and_type_index];
+      auto const& fieldOrigName = getString(class_, nameAndType.name_index);
+
+      auto i_newName = fieldRemap.find(className + "::" + fieldOrigName);
+
+      if(i_newName != fieldRemap.end())
+        nameAndType.name_index = addUtf8(class_, i_newName->second);
+    }
+  }
+
+  // field declarations
+  for(auto& field : class_.fields)
+  {
+    auto const& className = getString(class_, class_.const_pool[class_.this_class].name_index);
+    auto const& fieldOrigName = getString(class_, field.name_index);
+
+    auto i_newName = fieldRemap.find(className + "::" + fieldOrigName);
+
+    if(i_newName != fieldRemap.end())
+      field.name_index = addUtf8(class_, i_newName->second);
   }
 
   for(auto& method : class_.methods)
