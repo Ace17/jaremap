@@ -52,8 +52,19 @@ void remapFieldDescriptor(ConstPoolInfo& desc)
   }
 }
 
+int addUtf8(ClassFile& class_, string text)
+{
+  auto const idx = (int)class_.const_pool.size();
+  class_.const_pool_count++;
+  class_.const_pool.push_back({ CONSTANT::Utf8, {}, text });
+  return idx;
+}
+
 void doRenamings(ClassFile& class_)
 {
+  // HACK: avoid array re-allocation in the following loop
+  class_.const_pool.reserve(class_.const_pool.size() * 2);
+
   for(auto& constant : class_.const_pool)
   {
     if(constant.tag == CONSTANT::Class)
@@ -64,7 +75,7 @@ void doRenamings(ClassFile& class_)
       auto i_newName = classRemap.find(origClassName);
 
       if(i_newName != classRemap.end())
-        classNameEntry.utf8 = i_newName->second;
+        constant.name_index = addUtf8(class_, i_newName->second);
     }
     else if(constant.tag == CONSTANT::NameAndType)
     {
