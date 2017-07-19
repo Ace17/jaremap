@@ -2,5 +2,29 @@
 set -euo pipefail
 readonly bin=$1
 
+readonly scriptDir=$(dirname $0)
 
-echo OK
+readonly tmpDir=/tmp/jaremap-test-$$
+trap "rm -rf $tmpDir" EXIT
+mkdir -p $tmpDir
+
+function main
+{
+  run_test simple_class_rename
+  echo OK
+}
+
+function run_test
+{
+  echo "$*"
+  "$@"
+}
+
+function simple_class_rename
+{
+  echo "class Hello Goodbye" > $tmpDir/remap.txt
+  $bin/jaremap -i $scriptDir/Hello.class -r $tmpDir/remap.txt -p > $tmpDir/Hello.class.renamed
+  diff -Naurw $scriptDir/simple_rename.expected $tmpDir/Hello.class.renamed
+}
+
+main

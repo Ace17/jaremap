@@ -1,0 +1,5 @@
+Class: Goodbye
+Uses:
+ * java/lang/Object.<init> [()V]
+Defines:
+ * Goodbye.<init> [()V]
