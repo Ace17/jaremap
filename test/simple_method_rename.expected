@@ -1,0 +1,6 @@
+Class: HelloFunctions
+Uses:
+ * java/lang/Object.<init> [()V]
+Defines:
+ * HelloFunctions.<init> [()V]
+ * HelloFunctions.doBetter [(I)F]
