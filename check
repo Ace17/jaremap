@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export BIN=bin
+./scripts/reformat.sh
+make -j`nproc`
+./test/run $BIN
