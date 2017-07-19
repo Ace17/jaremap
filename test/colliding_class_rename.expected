@@ -1,0 +1,8 @@
+Class: HelloWithCollision
+Uses:
+ * java/lang/Object.<init> [()V]
+ * This_Is_A_Class.a [I]
+Defines:
+ * HelloWithCollision.<init> [()V]
+ * HelloWithCollision.f [(LThis_Is_A_Class;)V]
+ * HelloWithCollision.CollidingName [()V]

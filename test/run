@@ -11,6 +11,7 @@ mkdir -p $tmpDir
 function main
 {
   run_test simple_class_rename
+  #run_test colliding_class_rename
   echo OK
 }
 
@@ -23,8 +24,15 @@ function run_test
 function simple_class_rename
 {
   echo "class Hello Goodbye" > $tmpDir/remap.txt
-  $bin/jaremap -i $scriptDir/Hello.class -r $tmpDir/remap.txt -p > $tmpDir/Hello.class.renamed
-  diff -Naurw $scriptDir/simple_rename.expected $tmpDir/Hello.class.renamed
+  $bin/jaremap -i $scriptDir/Hello.class -r $tmpDir/remap.txt -p > $tmpDir/remapped.out
+  diff -Naurw $scriptDir/simple_rename.expected $tmpDir/remapped.out
+}
+
+function colliding_class_rename
+{
+  echo "class CollidingName This_Is_A_Class" > $tmpDir/remap.txt
+  $bin/jaremap -i $scriptDir/HelloWithCollision.class -r $tmpDir/remap.txt -p > $tmpDir/remapped.out
+  diff -Naurw $scriptDir/colliding_class_rename.expected $tmpDir/remapped.out
 }
 
 main
