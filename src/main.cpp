@@ -20,6 +20,7 @@ void printClass(ClassFile const& class_);
 // Renamer.cpp
 extern map<string, string> classRemap;
 extern map<string, string> fieldRemap;
+extern map<string, string> methodRemap;
 void doRenamings(ClassFile& class_);
 
 void renameFiles(map<string, ClassFile>& files)
@@ -74,6 +75,12 @@ void loadRemappings(string path)
       string class_, from, to;
       iss >> ws >> class_ >> ws >> from >> to;
       fieldRemap[class_ + "::" + from] = to;
+    }
+    else if(type == "method")
+    {
+      string class_, from, to;
+      iss >> ws >> class_ >> ws >> from >> to;
+      methodRemap[class_ + "::" + from] = to;
     }
   }
 }

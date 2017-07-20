@@ -12,7 +12,7 @@ function main
 {
   run_test simple_class_rename
   run_test colliding_class_rename
-  #run_test simple_method_rename
+  run_test simple_method_rename
   run_test simple_field_rename
   echo OK
 }

@@ -10,6 +10,7 @@ using namespace std;
 
 map<string, string> classRemap;
 map<string, string> fieldRemap;
+map<string, string> methodRemap;
 
 static
 string getString(ClassFile const& class_, int index)
@@ -97,6 +98,13 @@ void doRenamings(ClassFile& class_)
     remapFieldDescriptor(desc);
   }
 
+  // rename class names in method signatures
+  for(auto& method : class_.methods)
+  {
+    auto& desc = class_.const_pool[method.descriptor_index];
+    remapDescriptorQuickAndDirty(desc);
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // fields renaming
   /////////////////////////////////////////////////////////////////////////////
@@ -129,10 +137,36 @@ void doRenamings(ClassFile& class_)
       field.name_index = addUtf8(class_, i_newName->second);
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // methods renaming
+  /////////////////////////////////////////////////////////////////////////////
+
+  // refs to field
+  for(auto& constant : class_.const_pool)
+  {
+    if(constant.tag == CONSTANT::Methodref)
+    {
+      auto const& className = getString(class_, class_.const_pool[constant.class_index].name_index);
+      auto& nameAndType = class_.const_pool[constant.name_and_type_index];
+      auto const& origName = getString(class_, nameAndType.name_index);
+
+      auto i_newName = methodRemap.find(className + "::" + origName);
+
+      if(i_newName != methodRemap.end())
+        nameAndType.name_index = addUtf8(class_, i_newName->second);
+    }
+  }
+
+  // method declarations
   for(auto& method : class_.methods)
   {
-    auto& desc = class_.const_pool[method.descriptor_index];
-    remapDescriptorQuickAndDirty(desc);
+    auto const& className = getString(class_, class_.const_pool[class_.this_class].name_index);
+    auto const& fieldOrigName = getString(class_, method.name_index);
+
+    auto i_newName = methodRemap.find(className + "::" + fieldOrigName);
+
+    if(i_newName != methodRemap.end())
+      method.name_index = addUtf8(class_, i_newName->second);
   }
 }
 
