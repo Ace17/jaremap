@@ -69,13 +69,13 @@ void loadRemappings(string path)
     {
       string class_, from, to;
       iss >> ws >> class_ >> ws >> from >> to;
-      fieldRemap[class_ + "::" + from] = to;
+      memberRemap[{ false, class_, from }] = to;
     }
     else if(type == "method")
     {
       string class_, from, to;
       iss >> ws >> class_ >> ws >> from >> to;
-      methodRemap[class_ + "::" + from] = to;
+      memberRemap[{ true, class_, from }] = to;
     }
   }
 }
