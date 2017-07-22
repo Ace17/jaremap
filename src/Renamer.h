@@ -17,13 +17,16 @@ struct SourceId
     if(isMethod < other.isMethod)
       return true;
 
+    if(isMethod > other.isMethod)
+      return false;
+
     if(className < other.className)
       return true;
 
-    if(name < other.name)
-      return true;
+    if(className > other.className)
+      return false;
 
-    return false;
+    return name < other.name;
   }
 };
 
