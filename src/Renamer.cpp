@@ -104,25 +104,26 @@ void renameClasses(ClassFile& class_)
   }
 }
 
-void renameFields(ClassFile& class_, map<SourceId, string> const& remap)
+void renameMembers(ClassFile& class_, map<SourceId, string> const& remap)
 {
-  // the fields I'm referring to as a class file
+  // the other class members I'm referring to
   for(auto& constant : class_.const_pool)
   {
-    if(constant.tag == CONSTANT::Fieldref)
+    if(constant.tag == CONSTANT::Fieldref || constant.tag == CONSTANT::Methodref)
     {
+      auto const isMethod = constant.tag == CONSTANT::Methodref;
       auto const& className = getString(class_, class_.const_pool[constant.class_index].name_index);
       auto& nameAndType = class_.const_pool[constant.name_and_type_index];
       auto const& origName = getString(class_, nameAndType.name_index);
 
-      auto i_newName = remap.find({ false, className, origName });
+      auto i_newName = remap.find({ isMethod, className, origName });
 
       if(i_newName != remap.end())
         nameAndType.name_index = addUtf8(class_, i_newName->second);
     }
   }
 
-  // the fields I'm declaring as a class file
+  // the members I'm declaring
   for(auto& field : class_.fields)
   {
     auto const& className = getString(class_, class_.const_pool[class_.this_class].name_index);
@@ -133,27 +134,7 @@ void renameFields(ClassFile& class_, map<SourceId, string> const& remap)
     if(i_newName != remap.end())
       field.name_index = addUtf8(class_, i_newName->second);
   }
-}
 
-void renameMethods(ClassFile& class_, map<SourceId, string> const& remap)
-{
-  // the methods I'm referring to as a class file
-  for(auto& constant : class_.const_pool)
-  {
-    if(constant.tag == CONSTANT::Methodref)
-    {
-      auto const& className = getString(class_, class_.const_pool[constant.class_index].name_index);
-      auto& nameAndType = class_.const_pool[constant.name_and_type_index];
-      auto const& origName = getString(class_, nameAndType.name_index);
-
-      auto i_newName = remap.find({ true, className, origName });
-
-      if(i_newName != remap.end())
-        nameAndType.name_index = addUtf8(class_, i_newName->second);
-    }
-  }
-
-  // the methods I'm declaring as a class file
   for(auto& method : class_.methods)
   {
     auto const& className = getString(class_, class_.const_pool[class_.this_class].name_index);
@@ -173,8 +154,7 @@ void doRenamings(ClassFile& class_)
   class_.const_pool.reserve(class_.const_pool.size() * 4);
 
   renameClasses(class_);
-  renameFields(class_, memberRemap);
-  renameMethods(class_, memberRemap);
+  renameMembers(class_, memberRemap);
 
   class_.const_pool.shrink_to_fit();
 }
