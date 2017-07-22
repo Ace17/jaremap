@@ -12,7 +12,8 @@ map<string, string> classRemap;
 map<string, string> fieldRemap;
 map<string, string> methodRemap;
 
-static
+namespace
+{
 string getString(ClassFile const& class_, int index)
 {
   return class_.const_pool[index].utf8;
@@ -68,11 +69,8 @@ int addUtf8(ClassFile& class_, string text)
   return idx;
 }
 
-void doRenamings(ClassFile& class_)
+void renameClasses(ClassFile& class_)
 {
-  // HACK: avoid array re-allocation in the following loop
-  class_.const_pool.reserve(class_.const_pool.size() * 2);
-
   for(auto& constant : class_.const_pool)
   {
     if(constant.tag == CONSTANT::Class)
@@ -104,12 +102,11 @@ void doRenamings(ClassFile& class_)
     auto& desc = class_.const_pool[method.descriptor_index];
     remapDescriptorQuickAndDirty(desc);
   }
+}
 
-  /////////////////////////////////////////////////////////////////////////////
-  // fields renaming
-  /////////////////////////////////////////////////////////////////////////////
-
-  // refs to field
+void renameFields(ClassFile& class_)
+{
+  // the fields I'm referring to as a class file
   for(auto& constant : class_.const_pool)
   {
     if(constant.tag == CONSTANT::Fieldref)
@@ -125,7 +122,7 @@ void doRenamings(ClassFile& class_)
     }
   }
 
-  // field declarations
+  // the fields I'm declaring as a class file
   for(auto& field : class_.fields)
   {
     auto const& className = getString(class_, class_.const_pool[class_.this_class].name_index);
@@ -136,12 +133,11 @@ void doRenamings(ClassFile& class_)
     if(i_newName != fieldRemap.end())
       field.name_index = addUtf8(class_, i_newName->second);
   }
+}
 
-  /////////////////////////////////////////////////////////////////////////////
-  // methods renaming
-  /////////////////////////////////////////////////////////////////////////////
-
-  // refs to field
+void renameMethods(ClassFile& class_)
+{
+  // the methods I'm referring to as a class file
   for(auto& constant : class_.const_pool)
   {
     if(constant.tag == CONSTANT::Methodref)
@@ -157,7 +153,7 @@ void doRenamings(ClassFile& class_)
     }
   }
 
-  // method declarations
+  // the methods I'm declaring as a class file
   for(auto& method : class_.methods)
   {
     auto const& className = getString(class_, class_.const_pool[class_.this_class].name_index);
@@ -168,5 +164,16 @@ void doRenamings(ClassFile& class_)
     if(i_newName != methodRemap.end())
       method.name_index = addUtf8(class_, i_newName->second);
   }
+}
+}
+
+void doRenamings(ClassFile& class_)
+{
+  // HACK: avoid array re-allocation in the following loop
+  class_.const_pool.reserve(class_.const_pool.size() * 2);
+
+  renameClasses(class_);
+  renameFields(class_);
+  renameMethods(class_);
 }
 
