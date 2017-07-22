@@ -104,7 +104,7 @@ void renameClasses(ClassFile& class_)
   }
 }
 
-void renameFields(ClassFile& class_)
+void renameFields(ClassFile& class_, map<string, string> const& remap)
 {
   // the fields I'm referring to as a class file
   for(auto& constant : class_.const_pool)
@@ -113,11 +113,11 @@ void renameFields(ClassFile& class_)
     {
       auto const& className = getString(class_, class_.const_pool[constant.class_index].name_index);
       auto& nameAndType = class_.const_pool[constant.name_and_type_index];
-      auto const& fieldOrigName = getString(class_, nameAndType.name_index);
+      auto const& origName = getString(class_, nameAndType.name_index);
 
-      auto i_newName = fieldRemap.find(className + "::" + fieldOrigName);
+      auto i_newName = remap.find(className + "::" + origName);
 
-      if(i_newName != fieldRemap.end())
+      if(i_newName != remap.end())
         nameAndType.name_index = addUtf8(class_, i_newName->second);
     }
   }
@@ -126,16 +126,16 @@ void renameFields(ClassFile& class_)
   for(auto& field : class_.fields)
   {
     auto const& className = getString(class_, class_.const_pool[class_.this_class].name_index);
-    auto const& fieldOrigName = getString(class_, field.name_index);
+    auto const& origName = getString(class_, field.name_index);
 
-    auto i_newName = fieldRemap.find(className + "::" + fieldOrigName);
+    auto i_newName = remap.find(className + "::" + origName);
 
-    if(i_newName != fieldRemap.end())
+    if(i_newName != remap.end())
       field.name_index = addUtf8(class_, i_newName->second);
   }
 }
 
-void renameMethods(ClassFile& class_)
+void renameMethods(ClassFile& class_, map<string, string> const& remap)
 {
   // the methods I'm referring to as a class file
   for(auto& constant : class_.const_pool)
@@ -146,9 +146,9 @@ void renameMethods(ClassFile& class_)
       auto& nameAndType = class_.const_pool[constant.name_and_type_index];
       auto const& origName = getString(class_, nameAndType.name_index);
 
-      auto i_newName = methodRemap.find(className + "::" + origName);
+      auto i_newName = remap.find(className + "::" + origName);
 
-      if(i_newName != methodRemap.end())
+      if(i_newName != remap.end())
         nameAndType.name_index = addUtf8(class_, i_newName->second);
     }
   }
@@ -159,9 +159,9 @@ void renameMethods(ClassFile& class_)
     auto const& className = getString(class_, class_.const_pool[class_.this_class].name_index);
     auto const& fieldOrigName = getString(class_, method.name_index);
 
-    auto i_newName = methodRemap.find(className + "::" + fieldOrigName);
+    auto i_newName = remap.find(className + "::" + fieldOrigName);
 
-    if(i_newName != methodRemap.end())
+    if(i_newName != remap.end())
       method.name_index = addUtf8(class_, i_newName->second);
   }
 }
@@ -173,8 +173,8 @@ void doRenamings(ClassFile& class_)
   class_.const_pool.reserve(class_.const_pool.size() * 4);
 
   renameClasses(class_);
-  renameFields(class_);
-  renameMethods(class_);
+  renameFields(class_, fieldRemap);
+  renameMethods(class_, methodRemap);
 
   class_.const_pool.shrink_to_fit();
 }
