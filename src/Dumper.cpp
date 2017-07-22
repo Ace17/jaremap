@@ -76,9 +76,14 @@ void dumpClass(ClassFile const& class_)
   }
 
   cout << "Class: " << getClass(class_, class_.this_class);
+
   if(class_.super_class > 0)
     cout << " (extends " << getClass(class_, class_.super_class) << ")";
+
   cout << endl;
+
+  for(auto& intf : class_.interfaces)
+    cout << " * implements: " << getClass(class_, intf) << endl;
 
   for(auto& method : class_.methods)
   {
