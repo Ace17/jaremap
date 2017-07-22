@@ -75,7 +75,10 @@ void dumpClass(ClassFile const& class_)
     ++i;
   }
 
-  cout << "Class: " << getClass(class_, class_.this_class) << endl;
+  cout << "Class: " << getClass(class_, class_.this_class);
+  if(class_.super_class > 0)
+    cout << " (extends " << getClass(class_, class_.super_class) << ")";
+  cout << endl;
 
   for(auto& method : class_.methods)
   {
