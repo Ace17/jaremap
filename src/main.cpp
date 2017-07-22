@@ -9,6 +9,7 @@
 #include "InputStream.h"
 #include "OutputStream.h"
 #include "JarFile.h"
+#include "Renamer.h"
 
 using namespace std;
 
@@ -16,12 +17,6 @@ ClassFile parseClass(InputStream* fp);
 void writeClass(OutputStream* fp, ClassFile const& class_);
 void dumpClass(ClassFile const& class_);
 void printClass(ClassFile const& class_);
-
-// Renamer.cpp
-extern map<string, string> classRemap;
-extern map<string, string> fieldRemap;
-extern map<string, string> methodRemap;
-void doRenamings(ClassFile& class_);
 
 void renameFiles(map<string, ClassFile>& files)
 {
