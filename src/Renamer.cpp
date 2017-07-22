@@ -169,11 +169,13 @@ void renameMethods(ClassFile& class_)
 
 void doRenamings(ClassFile& class_)
 {
-  // HACK: avoid array re-allocation in the following loop
-  class_.const_pool.reserve(class_.const_pool.size() * 2);
+  // HACK: avoid array re-allocation when adding new utf8 descriptors
+  class_.const_pool.reserve(class_.const_pool.size() * 4);
 
   renameClasses(class_);
   renameFields(class_);
   renameMethods(class_);
+
+  class_.const_pool.shrink_to_fit();
 }
 
