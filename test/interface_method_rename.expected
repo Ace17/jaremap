@@ -1,0 +1,6 @@
+Class: MyImplementerClass
+Uses:
+ * java/lang/Object.<init> [()V]
+Defines:
+ * MyImplementerClass.<init> [()V]
+ * MyImplementerClass.doBetter [(I)F]

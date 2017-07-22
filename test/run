@@ -13,6 +13,7 @@ function main
   run_test simple_class_rename
   run_test colliding_class_rename
   run_test simple_method_rename
+  #run_test interface_method_rename
   run_test simple_field_rename
   echo OK
 }
@@ -35,6 +36,13 @@ function simple_method_rename
   echo "method HelloFunctions doSomething doBetter" > $tmpDir/remap.txt
   $bin/jaremap -i $scriptDir/HelloFunctions.class -r $tmpDir/remap.txt -p > $tmpDir/remapped.out
   diff -Naurw $scriptDir/simple_method_rename.expected $tmpDir/remapped.out
+}
+
+function interface_method_rename
+{
+  echo "method MyInterface doSomething doBetter" > $tmpDir/remap.txt
+  $bin/jaremap -i $scriptDir/MyImplementerClass.class -r $tmpDir/remap.txt -p > $tmpDir/remapped.out
+  diff -Naurw $scriptDir/interface_method_rename.expected $tmpDir/remapped.out
 }
 
 function simple_field_rename
